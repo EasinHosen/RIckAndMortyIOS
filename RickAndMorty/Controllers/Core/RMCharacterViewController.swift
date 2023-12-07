@@ -10,7 +10,7 @@ import UIKit
 
 final class RMCharacterViewController: UIViewController {
 
-    private let charListView = CharacterListView()
+    private let charListView = RMCharacterListView()
     
     override func viewDidLoad() {
         super.viewDidLoad()

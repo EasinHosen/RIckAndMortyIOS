@@ -18,4 +18,13 @@ enum RMCharacterStatGen: String, Codable{
 ///('Alive', 'Dead').
     case alive = "Alive"
     case dead = "Dead"
+    
+    var text: String {
+        switch self{
+        case .alive, .dead, .male, .female, .genderless:
+            return rawValue
+        case .unknown:
+            return "Unknown"
+        }
+    }
 }
