@@ -9,7 +9,10 @@ import UIKit
 
 protocol RMCharacterLVViewModelDelegate: AnyObject{
     func didLoadInitialCharacter()
+    func didSelectCharacter(_ character: RMCharacter)
 }
+
+//viewmodel to handle lv logic
 
 class RMCharacterLVVIewModel: NSObject{
     public weak var delegate: RMCharacterLVViewModelDelegate?
@@ -29,6 +32,9 @@ class RMCharacterLVVIewModel: NSObject{
     
     private var cellViewModels: [RMCharacterCollectionViewCellVewModel] = []
     
+    private var apiInfo: RMGetAllCharacterResponse.Info? = nil
+    
+    ///fetch initial set of char(20)
     public func fetchCharacters(){
         RMService.shared.execute(
             .listCharactersRequest,
@@ -37,7 +43,7 @@ class RMCharacterLVVIewModel: NSObject{
             switch result {
             case .success(let responseModel):
                 let results = responseModel.results
-//                let info = responseModel.info
+                self?.apiInfo = responseModel.info
                 self?.characters = results
                 DispatchQueue.main.async{
                     self?.delegate?.didLoadInitialCharacter()
@@ -47,8 +53,18 @@ class RMCharacterLVVIewModel: NSObject{
             }
         }
     }
+    
+    /// load more characters in the list
+    public func fetchAdditionalCharacters(){
+        
+    }
+    public var shouldSowLoaMoreIndecator: Bool{
+        return apiInfo?.next != nil
+    }
 }
 
+
+//MARK: - collection view
 extension RMCharacterLVVIewModel: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int)-> Int {
         return cellViewModels.count
@@ -68,5 +84,20 @@ extension RMCharacterLVVIewModel: UICollectionViewDataSource, UICollectionViewDe
         let width = (bounds.width-30)/2
         
         return CGSize(width: width, height: width*1.5)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
+        let char = characters[indexPath.row]
+        delegate?.didSelectCharacter(char)
+    }
+}
+
+//MARK: - scrollview
+extension RMCharacterLVVIewModel: UIScrollViewDelegate{
+    func scrollViewDidScroll(_ scrollView: UIScrollView){
+        guard shouldSowLoaMoreIndecator else {
+            return
+        }
     }
 }
