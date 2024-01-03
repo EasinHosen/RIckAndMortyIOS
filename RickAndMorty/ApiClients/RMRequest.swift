@@ -49,12 +49,53 @@ final class RMRequest{
     
     public let httpMEthod = "GET"
     
-    public init(endpoint: RMEndpoint, pathComponents: [String] = [], queryParameters: [URLQueryItem]=[]) {
+    public init(endpoint: RMEndpoint, 
+            pathComponents: [String] = [],
+            queryParameters: [URLQueryItem]=[]) {
         self.endpoint = endpoint
         self.pathComponents = pathComponents
         self.queryParameters = queryParameters
     }
     
+    convenience init?(url: URL){
+        let str = url.absoluteString
+        if !str.contains(Constants.baseUrl){
+            return nil
+        }
+        let trimed = str.replacingOccurrences(of: Constants.baseUrl+"/", with: "")
+        if trimed.contains("/"){
+            let components = trimed.components(separatedBy: "/")
+            if !components.isEmpty{
+                let endpointStr = components[0]
+                if let rmEndpoint = RMEndpoint(rawValue: endpointStr) {
+                    self.init(endpoint: rmEndpoint)
+                    return
+                }
+            }
+        }else if trimed.contains("?"){
+            let components = trimed.components(separatedBy: "?")
+            if !components.isEmpty, components.count >= 2{
+                let endpointStr = components[0]
+                let queryItemsStr = components[1]
+                
+                let queryItems: [URLQueryItem] = queryItemsStr.components(separatedBy: "&").compactMap({
+                    guard $0.contains("=") else{
+                        return nil
+                    }
+                    let parts = $0.components(separatedBy: "=")
+                    
+                    return URLQueryItem(name: parts[0], value: parts[1])
+                })
+                
+                
+                if let rmEndpoint = RMEndpoint(rawValue: endpointStr) {
+                    self.init(endpoint: rmEndpoint, queryParameters: queryItems)
+                    return
+                }
+            }
+        }
+        return nil
+    }
 }
 
 extension RMRequest{

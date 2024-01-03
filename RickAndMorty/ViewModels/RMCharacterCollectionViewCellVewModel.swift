@@ -6,7 +6,7 @@
 //
 
 import Foundation
-final class RMCharacterCollectionViewCellVewModel{
+final class RMCharacterCollectionViewCellVewModel: Hashable, Equatable{
     public let characterName: String
     private let characterStatus: RMCharacterStatGen
     private let characterImageUrl: URL?
@@ -39,5 +39,17 @@ final class RMCharacterCollectionViewCellVewModel{
         }
         task.resume()
         
+    }
+    
+    //MARK:- hashable
+    
+    static func == (lhs: RMCharacterCollectionViewCellVewModel, rhs: RMCharacterCollectionViewCellVewModel) -> Bool{
+        return lhs.hashValue == rhs.hashValue
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(characterName)
+        hasher.combine(characterStatus)
+        hasher.combine(characterImageUrl)
     }
 }
