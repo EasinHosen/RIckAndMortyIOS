@@ -8,7 +8,7 @@
 import Foundation
 
 /// api endpoints
-@frozen enum RMEndpoint: String{
+@frozen enum RMEndpoint: String, CaseIterable, Hashable{
     case character  //"character"
     case location
     case episode

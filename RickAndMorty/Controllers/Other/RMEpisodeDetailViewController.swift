@@ -9,10 +9,10 @@ import UIKit
 
 final class RMEpisodeDetailViewController: UIViewController {
 
-    private var url: URL?
+    private let viewModel: RMEpisodeDetailViewViewModel
     
     init(url: URL?){
-        self.url = url
+        self.viewModel = .init(endpointUrl: url)
         
         super.init(nibName: nil, bundle: nil)
     }
